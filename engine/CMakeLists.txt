@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.9)
-project(awesome-fxd VERSION 0.0.1 DESCRIPTION "FX")
-add_executable(awesome-fxd src/main.cc src/jack_client.cc src/fx_plugin_handler.cc src/controller.cc src/configuration_backend.cc)
-find_package(Boost 1.64.0 COMPONENTS system program_options filesystem REQUIRED)
-find_path(JACK_INCLUDE_DIR NAMES jack/jack.h)
-find_library(JACK_LIBRARY NAMES jack)
-include_directories(${Boost_INCLUDE_DIRS} ${JACK_INCLUDE_DIR} ../inc)
-target_link_libraries(awesome-fxd dl pthread ${Boost_LIBRARIES} ${JACK_LIBRARY})
+add_library(engine src/jack_client.cc src/fx_plugin_handler.cc src/controller.cc)
+target_include_directories(engine PRIVATE
+  ${Boost_INCLUDE_DIRS}
+  ${JACK_INCLUDE_DIR}
+  inc
+  ../inc
+  ../config_backend/inc
+)

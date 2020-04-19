@@ -3,7 +3,7 @@
 
 #include "fx_plugin_handler.h"
 #include "jack_client.h"
-#include "configuration_backend.h"
+#include <configuration_backend.h>
 
 namespace awesomefx
 {

@@ -6,14 +6,14 @@
 #include <dlfcn.h>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/executor_work_guard.hpp>
-#include "jack_client.h"
+#include <jack_client.h>
 #include <memory>
 #include <boost/program_options.hpp>
 #include <audio_processor.h>
 #include <fx_plugin.h>
-#include "fx_plugin_handler.h"
-#include "controller.h"
-#include "configuration_backend.h"
+#include <fx_plugin_handler.h>
+#include <controller.h>
+#include <configuration_backend.h>
 
 namespace po = boost::program_options;
 

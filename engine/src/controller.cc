@@ -1,5 +1,6 @@
 #include "controller.h"
 #include <fx_chain_configuration.h>
+#include <algorithm>
 
 using namespace awesomefx;
 
