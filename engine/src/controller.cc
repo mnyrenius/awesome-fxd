@@ -22,6 +22,12 @@ void ControllerImpl::start()
 {
   auto onApplyConfig = [this](const FxChainConfiguration& config) {
     m_fxChain.clear();
+    m_currentConfig = config;
+
+    if (config.empty())
+    {
+      return;
+    }
 
     for (auto i = 0U; i < config.size(); ++i)
     {
@@ -44,8 +50,6 @@ void ControllerImpl::start()
 
     m_fxChain.front()->connectInputsToCapturePorts(m_inputs);
     m_fxChain.back()->connectOutputsToPlaybackPorts();
-
-    m_currentConfig = config;
   };
 
   m_configBackend->registerOnApplyConfig(onApplyConfig);

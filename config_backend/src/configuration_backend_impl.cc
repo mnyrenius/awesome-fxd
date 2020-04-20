@@ -1,5 +1,6 @@
 #include "configuration_backend_impl.h"
 #include <nlohmann/json.hpp>
+#include <algorithm>
 
 using namespace awesomefx;
 using json = nlohmann::json;
@@ -80,6 +81,22 @@ void ConfigurationBackendImpl::start(std::uint32_t port)
       }
 
       c.send(make_200<beast::http::string_body>(r, reply.dump(), "application/json"));
+      });
+
+  m_router->put(R"(^/config$)", [this](beast_http_request r, http_context c) {
+      auto json = json::parse(r.body());
+      FxChainConfiguration config;
+      std::transform(
+          json.begin(),
+          json.end(),
+          std::back_inserter(config),
+          [](auto& fx) {
+            return FxConfiguration {fx["name"], fx["parameters"]};
+          });
+
+      m_applyConfig(config);
+
+      c.send(make_200<beast::http::string_body>(r, json.dump(), "application/json"));
       });
 
   m_router->all(R"(^.*$)", [](beast_http_request r, http_context c) {

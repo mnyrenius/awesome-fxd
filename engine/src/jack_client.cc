@@ -141,6 +141,13 @@ void JackClientImpl::connectInputs(const std::vector<std::string>& portNames) co
       portNames[1].c_str(),
       ::jack_port_name(m_processCtx.inputPorts.right));
 
+  printf("Connected ins %s and %s to %s and %s\n",
+      ::jack_port_name(m_processCtx.inputPorts.left),
+      ::jack_port_name(m_processCtx.inputPorts.right),
+      portNames[0].c_str(),
+      portNames[1].c_str()
+      );
+
 
   if (res1 || res2)
   {
@@ -160,6 +167,12 @@ void JackClientImpl::connectOutputs(const std::vector<std::string>& portNames) c
       ::jack_port_name(m_processCtx.outputPorts.right),
       portNames[1].c_str());
 
+  printf("Connected outs %s and %s to %s and %s\n",
+      ::jack_port_name(m_processCtx.outputPorts.left),
+      ::jack_port_name(m_processCtx.outputPorts.right),
+      portNames[0].c_str(),
+      portNames[1].c_str()
+      );
 
   if (res1 || res2)
   {
@@ -198,6 +211,10 @@ void JackClientImpl::connectOutputsToPlaybackPorts() const
       ::jack_port_name(m_processCtx.outputPorts.right),
       portNames[1].c_str());
 
+  printf("Connected %s and %s\n",
+      ::jack_port_name(m_processCtx.outputPorts.left),
+      ::jack_port_name(m_processCtx.outputPorts.right)
+      );
   if (res1 || res2)
   {
     throw std::runtime_error("Failed to connect output ports to playback ports");
