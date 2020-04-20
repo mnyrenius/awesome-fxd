@@ -13,7 +13,7 @@
 #include <fx_plugin.h>
 #include <fx_plugin_handler.h>
 #include <controller.h>
-#include <configuration_backend.h>
+#include <configuration_backend_impl.h>
 
 namespace po = boost::program_options;
 
@@ -53,14 +53,22 @@ int main(int argc, char *argv[])
   boost::asio::io_context io_context;
   auto work = boost::asio::make_work_guard(io_context);
 
+  auto configBackend = std::make_unique<ConfigurationBackendImpl>(io_context);
+  configBackend->start(8080);
+
+  auto jackClientFactory = [](auto& name, auto processor) {
+        return std::make_unique<JackClientImpl>(name, std::move(processor));
+  };
+
+  auto pluginHandler = std::make_unique<FxPluginHandlerImpl>(pluginDir);
   auto controller = std::make_unique<ControllerImpl>(
       inputs,
-      std::make_unique<FxPluginHandlerImpl>(pluginDir),
-      [](auto& name, auto processor) {
-        return std::make_unique<JackClientImpl>(name, std::move(processor));
-      },
-      std::make_unique<ConfigurationBackendImpl>()
+      std::move(pluginHandler),
+      jackClientFactory,
+      std::move(configBackend)
       );
+
+  controller->start();
 
   io_context.run();
 }

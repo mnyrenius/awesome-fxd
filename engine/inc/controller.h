@@ -12,6 +12,7 @@ class Controller
 {
   public:
     virtual ~Controller() {}
+    virtual void start() = 0;
 };
 
 class ControllerImpl : public Controller
@@ -25,6 +26,7 @@ class ControllerImpl : public Controller
 
     ControllerImpl() = delete;
     ~ControllerImpl() override = default;
+    void start() override;
 
   private:
     std::vector<std::string> m_inputs;

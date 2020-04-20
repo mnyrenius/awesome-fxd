@@ -15,6 +15,11 @@ ControllerImpl::ControllerImpl(
     m_jackClientFactory(std::move(jackClientFactory)),
     m_configBackend(std::move(configBackend))
 {
+
+}
+
+void ControllerImpl::start()
+{
   auto onApplyConfig = [this](const FxChainConfiguration& config) {
     m_fxChain.clear();
 
@@ -64,6 +69,8 @@ ControllerImpl::ControllerImpl(
   auto onGetConfig = [this] () {
     return m_currentConfig;
   };
+
+  m_configBackend->registerOnGetConfig(onGetConfig);
 
   printf("Available plugins:\n\n");
   for (auto plugin : onGetPlugins())
