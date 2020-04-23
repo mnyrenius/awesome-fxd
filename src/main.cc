@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
     ("help", "produce help message")
     ("input-ports", po::value<std::vector<std::string>>()->multitoken(), "set jack input ports")
     ("plugin-dir", po::value<std::vector<std::string>>(), "set plugin directory")
+    ("backend-port", po::value<std::uint32_t>(), "set backend port")
     ;
 
   po::variables_map vm;
@@ -39,6 +40,7 @@ int main(int argc, char *argv[])
 
   std::vector<std::string> inputs;
   std::string pluginDir{"effects"};
+  std::uint32_t backendPort{5396};
 
   if (vm.count("input-ports"))
   {
@@ -50,11 +52,16 @@ int main(int argc, char *argv[])
     pluginDir = vm["plugin-dir"].as<std::string>();
   }
 
+  if (vm.count("backend-port"))
+  {
+    backendPort = vm["backend-port"].as<std::uint32_t>();
+  }
+
   boost::asio::io_context io_context;
   auto work = boost::asio::make_work_guard(io_context);
 
   auto configBackend = std::make_unique<ConfigurationBackendImpl>(io_context);
-  configBackend->start(8080);
+  configBackend->start(backendPort);
 
   auto jackClientFactory = [](auto& name, auto processor) {
         return std::make_unique<JackClientImpl>(name, std::move(processor));

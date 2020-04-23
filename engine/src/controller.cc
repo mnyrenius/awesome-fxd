@@ -91,15 +91,7 @@ void ControllerImpl::start()
     {
       "Passthrough",
         { 1, 2 }
-    },
-      {
-        "Passthrough",
-        { 1, 2 }
-      },
-      {
-        "SimpleDistortion",
-        { 3, 4 }
-      }
+    }
   };
 
   onApplyConfig(conf);

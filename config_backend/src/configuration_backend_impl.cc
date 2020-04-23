@@ -17,6 +17,7 @@ make_200(const beast::http::request<RequestBody>& request,
     beast::http::response<ResponseBody> response{beast::http::status::ok, request.version()};
     response.set(beast::http::field::server, BOOST_BEAST_VERSION_STRING);
     response.set(beast::http::field::content_type, content);
+    response.set(beast::http::field::access_control_allow_origin, "*");
     response.body() = body;
     response.prepare_payload();
     response.keep_alive(request.keep_alive());
@@ -81,6 +82,17 @@ void ConfigurationBackendImpl::start(std::uint32_t port)
       }
 
       c.send(make_200<beast::http::string_body>(r, reply.dump(), "application/json"));
+      });
+
+  m_router->options(R"(^/config$)", [this](beast_http_request r, http_context c) {
+      beast::http::response<beast::http::string_body> response{beast::http::status::ok, r.version()};
+      response.set(beast::http::field::server, BOOST_BEAST_VERSION_STRING);
+      response.set(beast::http::field::access_control_allow_origin, "*");
+      response.set(beast::http::field::access_control_allow_methods, "GET, POST, PUT");
+      response.set(beast::http::field::access_control_allow_headers, "Content-Type");
+      response.prepare_payload();
+      response.keep_alive(r.keep_alive());
+      c.send(response);
       });
 
   m_router->put(R"(^/config$)", [this](beast_http_request r, http_context c) {
