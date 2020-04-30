@@ -20,7 +20,7 @@ class AudioProcessor
     struct Parameter
     {
       std::uint32_t index;
-      std::int32_t value;
+      float value;
     };
 
     virtual ~AudioProcessor() {}

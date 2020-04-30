@@ -3,11 +3,10 @@
 
 #include <string>
 #include <vector>
-#include <cstdint>
 
 namespace awesomefx
 {
-using ParameterValue = std::int32_t;
+using ParameterValue = float;
 
 struct FxConfiguration
 {

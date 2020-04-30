@@ -102,7 +102,7 @@ void ControllerImpl::start()
     printf("Plugin: %s\n", plugin.name.c_str());
     for (auto& param : plugin.parameters)
     {
-      printf("\tParameter: %d\n", param);
+      printf("\tParameter: %f\n", param);
     }
   }
 }
