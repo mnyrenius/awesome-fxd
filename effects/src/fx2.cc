@@ -8,16 +8,32 @@ namespace awesomefx
 
 namespace
 {
-  inline auto distort(auto in, auto x)
+  inline Sample distort(Sample in, auto x)
   {
-    if (in < 0.0)
+    if (std::fabs(in) < 0.33)
     {
-      return std::pow(in + 1.0, x) - 1.0;
+      return 2 * in;
     }
+    
+    else if (std::fabs(in) >= 0.33 * 2)
+    {
+      if (x > 0)
+      {
+        return (3-(2-in*3)*(2-in*3))/3;
+      }
+      else if (x < 0)
+      {
+        return -(3-(2+in*3)*(2+in*3))/3;
+      }
+    }
+
     else
     {
-      return std::pow(in - 1.0, x) + 1.0;
+      if (x > 0) return 1.0;
+      else if (x < 0) return -1.0;
     }
+
+    return 0.0;
   }
 }
 
