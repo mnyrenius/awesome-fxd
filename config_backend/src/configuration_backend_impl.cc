@@ -69,6 +69,11 @@ void ConfigurationBackendImpl::registerOnSetParameters(const OnSetParametersCall
   m_setParameters = callback;
 }
 
+void ConfigurationBackendImpl::registerOnReload(const OnReloadCallback& callback)
+{
+  m_reload = callback;
+}
+
 void ConfigurationBackendImpl::start(std::uint32_t port)
 {
   m_router->get(R"(^/plugins$)", [this](beast_http_request r, http_context c) {
@@ -91,7 +96,7 @@ void ConfigurationBackendImpl::start(std::uint32_t port)
       c.send(make_200<beast::http::string_body>(r, reply.dump(), "application/json"));
       });
 
-  m_router->options(R"(^/config(/*[0-9]*)$)", [this](beast_http_request r, http_context c) {
+  m_router->options(R"(^/.+$)", [this](beast_http_request r, http_context c) {
       beast::http::response<beast::http::string_body> response{beast::http::status::ok, r.version()};
       response.set(beast::http::field::server, BOOST_BEAST_VERSION_STRING);
       response.set(beast::http::field::access_control_allow_origin, "*");
@@ -134,6 +139,12 @@ void ConfigurationBackendImpl::start(std::uint32_t port)
       m_setParameters(index, json);
       c.send(make_200<beast::http::string_body>(r, json.dump(), "application/json"));
       });
+
+  m_router->post(R"(^/reload$)", [this](beast_http_request r, http_context c) {
+      m_reload();
+      c.send(make_200<beast::http::string_body>(r, "{}", "application/json"));
+      });
+
 
   m_router->all(R"(^.*$)", [](beast_http_request r, http_context c) {
       c.send(make_404<beast::http::string_body>(r, "not found", "text/html"));

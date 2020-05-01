@@ -6,16 +6,16 @@ using namespace awesomefx;
 
 ControllerImpl::ControllerImpl(
         std::vector<std::string> inputs,
-        FxPluginHandler::Ptr pluginHandler,
+        FxPluginHandler::Factory pluginHandlerFactory,
         JackClient::Factory jackClientFactory,
         ConfigurationBackend::Ptr configBackend)
   :
     m_inputs(std::move(inputs)),
-    m_pluginHandler(std::move(pluginHandler)),
+    m_pluginHandlerFactory(std::move(pluginHandlerFactory)),
     m_jackClientFactory(std::move(jackClientFactory)),
     m_configBackend(std::move(configBackend))
 {
-
+  m_pluginHandler = m_pluginHandlerFactory();
 }
 
 void ControllerImpl::start()
@@ -85,6 +85,15 @@ void ControllerImpl::start()
   };
 
   m_configBackend->registerOnSetParameters(onSetParameters);
+
+  auto onReload = [=] {
+    m_fxChain.clear();
+    m_pluginHandler.reset();
+    m_pluginHandler = m_pluginHandlerFactory();
+    onApplyConfig(m_currentConfig);
+  };
+
+  m_configBackend->registerOnReload(onReload);
 
   printf("Available plugins:\n\n");
   for (auto plugin : onGetPlugins())

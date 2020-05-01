@@ -14,6 +14,7 @@ class FxPluginHandler
 {
   public:
     using Ptr = std::unique_ptr<FxPluginHandler>;
+    using Factory = std::function<Ptr()>;
 
     virtual ~FxPluginHandler() {}
     virtual std::vector<const FxPlugin *> getAllPlugins() const = 0;

@@ -20,7 +20,7 @@ class ControllerImpl : public Controller
   public:
     ControllerImpl(
         std::vector<std::string> inputs,
-        FxPluginHandler::Ptr pluginHandler,
+        FxPluginHandler::Factory pluginHandlerFactory,
         JackClient::Factory jackClientFactory,
         ConfigurationBackend::Ptr configBackend);
 
@@ -30,6 +30,7 @@ class ControllerImpl : public Controller
 
   private:
     std::vector<std::string> m_inputs;
+    FxPluginHandler::Factory m_pluginHandlerFactory;
     FxPluginHandler::Ptr m_pluginHandler;
     JackClient::Factory m_jackClientFactory;
     ConfigurationBackend::Ptr m_configBackend;

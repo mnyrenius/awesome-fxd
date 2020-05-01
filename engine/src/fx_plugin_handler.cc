@@ -17,7 +17,7 @@ FxPluginHandlerImpl::FxPluginHandlerImpl(const std::string& dir)
       continue;
     }
 
-    auto handle = dlopen(path.c_str(), RTLD_LAZY);
+    auto handle = dlopen(path.c_str(), RTLD_LOCAL | RTLD_LAZY);
     if (!handle)
     {
       printf("Error: Failed to open %s\n", path.c_str());
@@ -44,9 +44,13 @@ FxPluginHandlerImpl::FxPluginHandlerImpl(const std::string& dir)
 
 FxPluginHandlerImpl::~FxPluginHandlerImpl()
 {
+  m_fxPlugins.clear();
   for (auto handle : m_handles)
   {
-    dlclose(handle);
+    if (dlclose(handle))
+    {
+      printf("Failed to close solib\n");
+    }
   }
 }
 

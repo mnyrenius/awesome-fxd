@@ -67,10 +67,13 @@ int main(int argc, char *argv[])
         return std::make_unique<JackClientImpl>(name, std::move(processor));
   };
 
-  auto pluginHandler = std::make_unique<FxPluginHandlerImpl>(pluginDir);
+  auto pluginHandlerFactory = [pluginDir] {
+    return std::make_unique<FxPluginHandlerImpl>(pluginDir);
+  };
+
   auto controller = std::make_unique<ControllerImpl>(
       inputs,
-      std::move(pluginHandler),
+      pluginHandlerFactory,
       jackClientFactory,
       std::move(configBackend)
       );
