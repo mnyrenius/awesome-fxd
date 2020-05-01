@@ -33,12 +33,14 @@ class ConfigurationBackendImpl : public ConfigurationBackend
     void registerOnGetPlugins(const OnGetPluginsCallback& callback) override;
     void registerOnApplyConfig(const OnApplyConfigCallback& callback) override;
     void registerOnGetConfig(const OnGetConfigCallback& callback) override;
+    void registerOnSetParameters(const OnSetParametersCallback& callback) override;
     void start(std::uint32_t port) override;
 
   private:
     OnGetPluginsCallback m_getPlugins;
     OnApplyConfigCallback m_applyConfig;
     OnGetConfigCallback m_getConfig;
+    OnSetParametersCallback m_setParameters;
     boost::asio::io_context& m_io;
     std::unique_ptr<http::basic_router<http_session>> m_router =
       std::make_unique<http::basic_router<http_session>>(std::regex::ECMAScript);

@@ -16,11 +16,13 @@ class ConfigurationBackend
     using OnGetPluginsCallback = std::function<AvailablePlugins()>;
     using OnApplyConfigCallback = std::function<void(const FxChainConfiguration&)>;
     using OnGetConfigCallback = std::function<FxChainConfiguration()>;
+    using OnSetParametersCallback = std::function<void(std::uint32_t, const std::vector<ParameterValue>&)>;
 
     virtual ~ConfigurationBackend() {}
     virtual void registerOnGetPlugins(const OnGetPluginsCallback& callback) = 0;
     virtual void registerOnApplyConfig(const OnApplyConfigCallback& callback) = 0;
     virtual void registerOnGetConfig(const OnGetConfigCallback& callback) = 0;
+    virtual void registerOnSetParameters(const OnSetParametersCallback& callback) = 0;
     virtual void start(std::uint32_t port) = 0;
 };
 

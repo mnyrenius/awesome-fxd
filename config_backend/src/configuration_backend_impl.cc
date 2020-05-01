@@ -1,9 +1,11 @@
 #include "configuration_backend_impl.h"
 #include <nlohmann/json.hpp>
 #include <algorithm>
+#include <http/param.hxx>
 
 using namespace awesomefx;
 using json = nlohmann::json;
+using pack = http::param::pack<int>;
 
 namespace
 {
@@ -62,6 +64,11 @@ void ConfigurationBackendImpl::registerOnGetConfig(const OnGetConfigCallback& ca
   m_getConfig = callback;
 }
 
+void ConfigurationBackendImpl::registerOnSetParameters(const OnSetParametersCallback& callback)
+{
+  m_setParameters = callback;
+}
+
 void ConfigurationBackendImpl::start(std::uint32_t port)
 {
   m_router->get(R"(^/plugins$)", [this](beast_http_request r, http_context c) {
@@ -84,7 +91,7 @@ void ConfigurationBackendImpl::start(std::uint32_t port)
       c.send(make_200<beast::http::string_body>(r, reply.dump(), "application/json"));
       });
 
-  m_router->options(R"(^/config$)", [this](beast_http_request r, http_context c) {
+  m_router->options(R"(^/config(/*[0-9]*)$)", [this](beast_http_request r, http_context c) {
       beast::http::response<beast::http::string_body> response{beast::http::status::ok, r.version()};
       response.set(beast::http::field::server, BOOST_BEAST_VERSION_STRING);
       response.set(beast::http::field::access_control_allow_origin, "*");
@@ -108,6 +115,23 @@ void ConfigurationBackendImpl::start(std::uint32_t port)
 
       m_applyConfig(config);
 
+      c.send(make_200<beast::http::string_body>(r, json.dump(), "application/json"));
+      });
+
+  m_router->param<pack>().get(R"(^/config/([0-9]+)$)", [this](beast_http_request r, http_context c, auto args) {
+      auto index = std::get<0>(args);
+
+      json reply;
+      reply = m_getConfig()[index].parameters;
+
+      c.send(make_200<beast::http::string_body>(r, reply.dump(), "application/json"));
+      });
+
+  m_router->param<pack>().put(R"(^/config/([0-9]+)$)", [this](beast_http_request r, http_context c, auto args) {
+      auto index = std::get<0>(args);
+      auto json = json::parse(r.body());
+
+      m_setParameters(index, json);
       c.send(make_200<beast::http::string_body>(r, json.dump(), "application/json"));
       });
 

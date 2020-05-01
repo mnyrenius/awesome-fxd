@@ -76,6 +76,16 @@ void ControllerImpl::start()
 
   m_configBackend->registerOnGetConfig(onGetConfig);
 
+  auto onSetParameters = [this] (std::uint32_t index, const std::vector<ParameterValue>& params) {
+    auto& fx = m_fxChain[index];
+    for (auto i = 0U; i < params.size(); ++i)
+    {
+      fx->setParameter({i, params[i]});
+    }
+  };
+
+  m_configBackend->registerOnSetParameters(onSetParameters);
+
   printf("Available plugins:\n\n");
   for (auto plugin : onGetPlugins())
   {
