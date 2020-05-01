@@ -16,7 +16,7 @@ class SimpleDelay : public AudioProcessor
   public:
     SimpleDelay()
     {
-      m_params = {0.3f, 0.3f};
+      m_params = {0.2f, 0.3f};
       m_lBuffer.reserve(DelayBufferSize);
       m_rBuffer.reserve(DelayBufferSize);
       std::fill(m_lBuffer.begin(), m_lBuffer.end(), 0.0);
@@ -72,4 +72,4 @@ extern "C" FxPlugin::Ptr createFxPlugin()
 {
   return std::make_unique<SimpleDelayPlugin>();
 }
- 
+

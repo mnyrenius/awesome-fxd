@@ -26,7 +26,7 @@ class SimpleDistortion : public AudioProcessor
   public:
     SimpleDistortion()
     {
-      m_params = {1};
+      m_params = {1.0f};
     }
 
     void process(Sample* in_l, Sample* in_r, Sample* out_l, Sample* out_r, std::size_t numSamples) override
@@ -43,7 +43,7 @@ class SimpleDistortion : public AudioProcessor
       m_params[param.index] = param.value;
     }
 
-    std::vector<int32_t> m_params;
+    std::vector<float> m_params;
 };
 
 class SimpleDistortionPlugin : public FxPlugin
