@@ -10,27 +10,28 @@ namespace
 {
   inline Sample distort(Sample in, auto x)
   {
-    if (std::fabs(in) < 0.33)
+    auto scaled = (1-x) * 0.3;
+    if (std::fabs(in) < scaled)
     {
       return 2 * in;
     }
     
-    else if (std::fabs(in) >= 0.33 * 2)
+    else if (std::fabs(in) >= scaled * 2)
     {
-      if (x > 0)
+      if (scaled > 0)
       {
-        return (3-(2-in*3)*(2-in*3))/3;
+        return (3-(2-in*3)*(2-in*3)*(2-in*3))/3;
       }
-      else if (x < 0)
+      else if (scaled < 0)
       {
-        return -(3-(2+in*3)*(2+in*3))/3;
+        return -(3-(2+in*3)*(2+in*3)*(2+in*3))/3;
       }
     }
 
     else
     {
-      if (x > 0) return 1.0;
-      else if (x < 0) return -1.0;
+      if (scaled > 0) return 1.0;
+      else if (scaled < 0) return -1.0;
     }
 
     return 0.0;
@@ -42,7 +43,7 @@ class SimpleDistortion : public AudioProcessor
   public:
     SimpleDistortion()
     {
-      m_params = {1.0f};
+      m_params = {0.0f};
     }
 
     void process(Sample* in_l, Sample* in_r, Sample* out_l, Sample* out_r, std::size_t numSamples) override
