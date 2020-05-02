@@ -77,6 +77,11 @@ void ControllerImpl::start()
   m_configBackend->registerOnGetConfig(onGetConfig);
 
   auto onSetParameters = [this] (std::uint32_t index, const std::vector<ParameterValue>& params) {
+    if (index >= m_fxChain.size())
+    {
+      return;
+    }
+
     auto& fx = m_fxChain[index];
     for (auto i = 0U; i < params.size(); ++i)
     {
