@@ -1,12 +1,20 @@
 cmake_minimum_required(VERSION 3.9)
 project(effects VERSION 0.0.1 DESCRIPTION "Various DSP effects")
-add_library(fx1 SHARED src/fx1.cc)
-add_library(fx2 SHARED src/fx2.cc)
-add_library(simple_delay SHARED src/simple_delay.cc)
+
 include_directories(../inc)
-set_target_properties(fx1 PROPERTIES SOVERSION 1)
-set_target_properties(fx2 PROPERTIES SOVERSION 1)
-set_target_properties(simple_delay PROPERTIES SOVERSION 1)
-install(TARGETS fx1 LIBRARY DESTINATION lib)
-install(TARGETS fx2 LIBRARY DESTINATION lib)
-install(TARGETS simple_delay LIBRARY DESTINATION lib)
+
+file(GLOB plugins "src/*.cc")
+
+message("Generating targets for plugins:")
+foreach(file ${plugins})
+  get_filename_component(plugin ${file} NAME_WE)
+  message("  Found " ${plugin})
+  add_library(${plugin} SHARED ${file})
+  set_target_properties(${plugin} PROPERTIES SOVERSION 1)
+  install(TARGETS ${plugin} LIBRARY DESTINATION lib)
+  list(APPEND alleffects "${plugin} ")
+endforeach()
+
+separate_arguments(alleffects)
+add_custom_target(effects DEPENDS ${alleffects})
+
