@@ -2,7 +2,6 @@
 #include <fx_plugin.h>
 #include <memory>
 #include <cmath>
-#include <algorithm>
 
 namespace awesomefx
 {
