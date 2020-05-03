@@ -41,7 +41,7 @@ namespace
 class SimpleDistortion : public AudioProcessor
 {
   public:
-    SimpleDistortion()
+    SimpleDistortion(const AudioProcessingContext&)
     {
       m_params = {0.0f};
     }
@@ -71,9 +71,9 @@ class SimpleDistortionPlugin : public FxPlugin
       return {"SimpleDistortion", {"Krschh"}};
     }
 
-    AudioProcessor::Ptr createAudioProcessor() const override
+    AudioProcessor::Ptr createAudioProcessor(const AudioProcessingContext& context) const override
     {
-      return std::make_unique<SimpleDistortion>();
+      return std::make_unique<SimpleDistortion>(context);
     }
 };
 

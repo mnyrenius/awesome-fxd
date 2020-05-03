@@ -33,14 +33,18 @@ void ControllerImpl::start()
     {
       auto& effect = config[i];
       auto& plugin = m_pluginHandler->getPlugin(effect.name);
-      auto processor = plugin.createAudioProcessor();
+
+      auto processorFactory = [&plugin] (auto& context) {
+        return plugin.createAudioProcessor(context);
+      };
+
+      auto client = m_jackClientFactory(effect.name, processorFactory);
 
       for (auto param = 0U; param < effect.parameters.size(); ++param)
       {
-        processor->setParameter({param, effect.parameters[param]});
+        client->setParameter({param, effect.parameters[param]});
       }
 
-      auto client = m_jackClientFactory(effect.name, std::move(processor));
       if (i > 0)
       {
         client->connectInputs(m_fxChain[i-1]->getOutputPorts());

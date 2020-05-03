@@ -1,6 +1,7 @@
 #include <jack_client.h>
 #include <stdexcept>
 #include <cstdio>
+#include <memory>
 
 using namespace awesomefx;
 
@@ -38,11 +39,8 @@ int process(jack_nframes_t nframes, void *arg)
 }
 }
 
-JackClientImpl::JackClientImpl(const std::string& name, AudioProcessor::Ptr processor)
+JackClientImpl::JackClientImpl(const std::string& name, const AudioProcessor::Factory& processorFactory)
 {
-  m_processCtx.processor = std::move(processor);
-  m_processCtx.ringBuffer = ::jack_ringbuffer_create(RingBufferSize);
-
   jack_status_t status;
   m_client = ::jack_client_open(name.c_str(), JackNullOption, &status, 0);
 
@@ -50,6 +48,9 @@ JackClientImpl::JackClientImpl(const std::string& name, AudioProcessor::Ptr proc
   {
     throw std::runtime_error("jack_client_open failed");
   }
+
+  m_processCtx.ringBuffer = ::jack_ringbuffer_create(RingBufferSize);
+  m_processCtx.processor = processorFactory(*this);
 
   ::jack_set_process_callback(m_client, process, &m_processCtx);
 
@@ -234,3 +235,7 @@ void JackClientImpl::setParameter(const AudioProcessor::Parameter& parameter) co
   }
 }
 
+std::uint32_t JackClientImpl::getSampleRate() const
+{
+  return ::jack_get_sample_rate(m_client);
+}

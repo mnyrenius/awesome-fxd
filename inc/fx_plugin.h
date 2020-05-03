@@ -1,7 +1,6 @@
 #ifndef FX_PLUGIN_H
 #define FX_PLUGIN_H
 
-#include <memory>
 #include <string>
 #include <vector>
 #include <audio_processor.h>
@@ -23,7 +22,7 @@ class FxPlugin
     virtual ~FxPlugin() {}
 
     virtual FxPluginInfo getPluginInfo() const = 0;
-    virtual AudioProcessor::Ptr createAudioProcessor() const = 0;
+    virtual AudioProcessor::Ptr createAudioProcessor(const AudioProcessingContext& context) const = 0;
 };
 
 }

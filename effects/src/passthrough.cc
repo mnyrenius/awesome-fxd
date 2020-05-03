@@ -9,6 +9,11 @@ namespace awesomefx
 class Passthrough : public AudioProcessor
 {
   public:
+    Passthrough(const AudioProcessingContext& context)
+    {
+      printf("Current sample rate: %u\n", context.getSampleRate());
+    }
+
     void process(Sample* in_l, Sample* in_r, Sample* out_l, Sample* out_r, std::size_t numSamples) override
     {
       std::memcpy(out_l, in_l, sizeof(Sample) * numSamples);
@@ -28,9 +33,9 @@ class PassthroughPlugin : public FxPlugin
       return {"Passthrough", {"Param1", "Param2"}};
     }
 
-    AudioProcessor::Ptr createAudioProcessor() const override
+    AudioProcessor::Ptr createAudioProcessor(const AudioProcessingContext& context) const override
     {
-      return std::make_unique<Passthrough>();
+      return std::make_unique<Passthrough>(context);
     }
 };
 

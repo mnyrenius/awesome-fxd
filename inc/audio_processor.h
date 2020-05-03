@@ -12,10 +12,18 @@ namespace awesomefx
 
 using Sample = float;
 
+class AudioProcessingContext
+{
+  public:
+    virtual ~AudioProcessingContext() {}
+    virtual std::uint32_t getSampleRate() const = 0;
+};
+
 class AudioProcessor
 {
   public:
     using Ptr = std::unique_ptr<AudioProcessor>;
+    using Factory = std::function<Ptr(const AudioProcessingContext&)>;
 
     struct Parameter
     {

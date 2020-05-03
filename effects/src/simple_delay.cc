@@ -14,7 +14,7 @@ namespace
 class SimpleDelay : public AudioProcessor
 {
   public:
-    SimpleDelay()
+    SimpleDelay(const AudioProcessingContext& context)
     {
       m_params = {0.2f, 0.3f};
       m_lBuffer.reserve(DelayBufferSize);
@@ -58,9 +58,9 @@ class SimpleDelayPlugin : public FxPlugin
       return {"SimpleDelay", {"Time", "Feedback"}};
     }
 
-    AudioProcessor::Ptr createAudioProcessor() const override
+    AudioProcessor::Ptr createAudioProcessor(const AudioProcessingContext& context) const override
     {
-      return std::make_unique<SimpleDelay>();
+      return std::make_unique<SimpleDelay>(context);
     }
 };
 

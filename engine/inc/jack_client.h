@@ -17,7 +17,7 @@ class JackClient
 {
   public:
     using Ptr = std::unique_ptr<JackClient>;
-    using Factory = std::function<Ptr(const std::string&, AudioProcessor::Ptr)>;
+    using Factory = std::function<Ptr(const std::string&, AudioProcessor::Factory)>;
 
     virtual ~JackClient() {}
     virtual void connectInputsToCapturePorts(std::vector<std::string> portNames) const = 0;
@@ -29,7 +29,8 @@ class JackClient
     virtual void setParameter(const AudioProcessor::Parameter& parameter) const = 0;
 };
 
-class JackClientImpl : public JackClient
+class JackClientImpl : public JackClient,
+                       public AudioProcessingContext
 {
   public:
     struct PortPair
@@ -46,7 +47,7 @@ class JackClientImpl : public JackClient
       jack_ringbuffer_t *ringBuffer;
     };
 
-    JackClientImpl(const std::string& name, AudioProcessor::Ptr processor);
+    JackClientImpl(const std::string& name, const AudioProcessor::Factory& processorFactory);
     ~JackClientImpl() override;
     JackClientImpl() = delete;
 
@@ -57,6 +58,8 @@ class JackClientImpl : public JackClient
     void connectInputs(const std::vector<std::string>& portNames) const override;
     void connectOutputs(const std::vector<std::string>& portNames) const override;
     void setParameter(const AudioProcessor::Parameter& parameter) const override;
+
+    std::uint32_t getSampleRate() const override;
 
   private:
 
