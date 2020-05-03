@@ -9,6 +9,9 @@ namespace awesomefx
 namespace
 {
   const int DelayBufferSize = 128000;
+  const int Time = 0;
+  const int Feedback = 1;
+  const int DryWet = 2;
 }
 
 class SimpleDelay : public AudioProcessor
@@ -16,7 +19,7 @@ class SimpleDelay : public AudioProcessor
   public:
     SimpleDelay(const AudioProcessingContext& context)
     {
-      m_params = {0.2f, 0.3f};
+      m_params = {0.2, 0.3, 0.5};
       m_lBuffer.reserve(DelayBufferSize);
       m_rBuffer.reserve(DelayBufferSize);
       std::fill(m_lBuffer.begin(), m_lBuffer.end(), 0.0);
@@ -28,11 +31,17 @@ class SimpleDelay : public AudioProcessor
       while (numSamples--)
       {
         if (m_index >= DelayBufferSize) m_index = 0;
-        auto j = m_index - (m_params[0] * m_maxDelayTime);
+        auto j = m_index - (m_params[Time] * m_maxDelayTime);
         if (j < 0) j += DelayBufferSize;
 
-        *out_l++ = m_lBuffer[m_index] = *in_l++ + (m_lBuffer[j] * m_params[1]);
-        *out_r++ = m_rBuffer[m_index] = *in_r++ + (m_rBuffer[j] * m_params[1]);
+        auto dry_l = *in_l++;
+        auto dry_r = *in_r++;
+        m_lBuffer[m_index] = dry_l + (m_lBuffer[j] * m_params[Feedback]);
+        m_rBuffer[m_index] = dry_r + (m_rBuffer[j] * m_params[Feedback]);
+        auto wet_l = m_lBuffer[j] * m_params[Feedback];
+        auto wet_r = m_rBuffer[j] * m_params[Feedback];
+        *out_l++ = m_params[DryWet] * wet_l + (1 - m_params[DryWet]) * dry_l;
+        *out_r++ = m_params[DryWet] * wet_r + (1 - m_params[DryWet]) * dry_r;
         m_index++;
       }
     }
@@ -55,7 +64,7 @@ class SimpleDelayPlugin : public FxPlugin
   public:
     FxPluginInfo getPluginInfo() const override
     {
-      return {"SimpleDelay", {"Time", "Feedback"}};
+      return {"SimpleDelay", {"Time", "Feedback", "Dry/Wet"}};
     }
 
     AudioProcessor::Ptr createAudioProcessor(const AudioProcessingContext& context) const override
