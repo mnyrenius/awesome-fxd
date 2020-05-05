@@ -8,7 +8,7 @@ using namespace awesomefx;
 namespace
 {
 
-const std::size_t RingBufferSize = 4096;
+const std::size_t RingBufferSize = 8192;
 
 int process(jack_nframes_t nframes, void *arg)
 {
