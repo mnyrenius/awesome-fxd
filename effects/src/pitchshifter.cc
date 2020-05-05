@@ -10,6 +10,7 @@ namespace
 {
   const int DelayLineSize = 2048;
   const int Pitch = 0;
+  const int DryWet = 1;
 
   inline Sample interpolate(float phase, const std::vector<Sample>& delayLine)
   {
@@ -51,8 +52,11 @@ class PitchShifter : public AudioProcessor
 
         auto fade = 2.0 * (m_phase >= 0.5 ? 1.0 - m_phase : m_phase);
 
-        *out_l++ = interpolate(phase, m_lDelayLine) * fade + interpolate(read2, m_lDelayLine) * (1 - fade);
-        *out_r++ = interpolate(phase, m_rDelayLine) * fade + interpolate(read2, m_rDelayLine) * (1 - fade);
+        auto wet_l = interpolate(phase, m_lDelayLine) * fade + interpolate(read2, m_lDelayLine) * (1 - fade);
+        auto wet_r = interpolate(phase, m_rDelayLine) * fade + interpolate(read2, m_rDelayLine) * (1 - fade);
+        auto wetness = m_params[DryWet];
+        *out_l++ = wet_l * wetness + left * (1 - wetness);
+        *out_r++ = wet_r * wetness + right * (1 - wetness);
 
         m_phase += 2 * m_params[Pitch] / DelayLineSize;
         if (m_phase >= 1.0) m_phase -= 1.0;
@@ -65,7 +69,7 @@ class PitchShifter : public AudioProcessor
       m_params[param.index] = param.value;
     }
 
-    std::vector<float> m_params {0.5};
+    std::vector<float> m_params {0.5, 0.0};
     std::vector<Sample> m_lDelayLine;
     std::vector<Sample> m_rDelayLine;
     std::uint32_t m_index = 0;
@@ -77,7 +81,7 @@ class PitchShifterPlugin : public FxPlugin
   public:
     FxPluginInfo getPluginInfo() const override
     {
-      return {"Pitch Shifter", {"Pitch"}};
+      return {"Pitch Shifter", {"Pitch", "Dry/Wet"}};
     }
 
     AudioProcessor::Ptr createAudioProcessor(const AudioProcessingContext& context) const override
