@@ -69,13 +69,14 @@ namespace awesomefx
           m_delayLine1_r.write(right);
           m_delayLine2_r.write(right);
 
-          auto mod = 0.25 * DelayBufferSize * std::sin(2.0 * 3.141592 * m_phase) * m_depth;
+          auto mod_l = 0.25 * DelayBufferSize * std::sin(2.0 * 3.141592 * m_phase) * m_depth;
+          auto mod_r = 0.25 * DelayBufferSize * std::sin(2.0 * 3.141592 * m_phase * 0.8) * m_depth;
 
-          auto wet_l = 0.5 * m_delayLine1_l.read(Delay1 + mod) +
-                       0.5 * m_delayLine2_l.read(Delay2 + mod);
+          auto wet_l = 0.5 * m_delayLine1_l.read(Delay1 + mod_l) +
+                       0.5 * m_delayLine2_l.read(Delay2 + mod_l);
 
-          auto wet_r = 0.5 * m_delayLine1_r.read(Delay1 + mod) +
-                       0.5 * m_delayLine2_r.read(Delay2 + mod);
+          auto wet_r = 0.5 * m_delayLine1_r.read(Delay1 * 0.8 + mod_r) +
+                       0.5 * m_delayLine2_r.read(Delay2 * 0.8 + mod_r);
 
           *out_l++ = m_drywet * wet_l + (1 - m_drywet) * left;
           *out_r++ = m_drywet * wet_r + (1 - m_drywet) * right;
