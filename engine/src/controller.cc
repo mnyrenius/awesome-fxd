@@ -52,7 +52,7 @@ void ControllerImpl::start()
       m_fxChain.push_back(std::move(client));
     }
 
-    m_fxChain.front()->connectInputsToCapturePorts(m_inputs);
+    m_fxChain.front()->connectInputsToCapturePorts(m_inputs, m_globalSettings.monoInput);
     m_fxChain.back()->connectOutputsToPlaybackPorts();
   };
 
@@ -103,6 +103,19 @@ void ControllerImpl::start()
   };
 
   m_configBackend->registerOnReload(onReload);
+
+  auto onApplyGlobalSettings = [=](const GlobalSettings& settings) {
+    m_globalSettings = settings;
+    onApplyConfig(m_currentConfig);
+  };
+
+  m_configBackend->registerOnApplyGlobalSettings(onApplyGlobalSettings);
+
+  auto onGetGlobalSettings = [this] {
+    return m_globalSettings;
+  };
+
+  m_configBackend->registerOnGetGlobalSettings(onGetGlobalSettings);
 
   printf("Available plugins:\n\n");
   for (auto plugin : onGetPlugins())

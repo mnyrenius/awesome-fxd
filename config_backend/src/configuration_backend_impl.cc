@@ -74,6 +74,16 @@ void ConfigurationBackendImpl::registerOnReload(const OnReloadCallback& callback
   m_reload = callback;
 }
 
+void ConfigurationBackendImpl::registerOnApplyGlobalSettings(const OnApplyGlobalSettingsCallback& callback)
+{
+  m_applyGlobalSettings = callback;
+}
+
+void ConfigurationBackendImpl::registerOnGetGlobalSettings(const OnGetGlobalSettingsCallback& callback)
+{
+  m_getGlobalSettings = callback;
+}
+
 void ConfigurationBackendImpl::start(std::uint32_t port)
 {
   m_router->get(R"(^/plugins$)", [this](beast_http_request r, http_context c) {
@@ -145,6 +155,22 @@ void ConfigurationBackendImpl::start(std::uint32_t port)
       c.send(make_200<beast::http::string_body>(r, "{}", "application/json"));
       });
 
+  m_router->get(R"(^/globalsettings$)", [this](beast_http_request r, http_context c) {
+      json reply;
+
+      auto settings = m_getGlobalSettings();
+      reply["mono-input"] = settings.monoInput;
+
+      c.send(make_200<beast::http::string_body>(r, reply.dump(), "application/json"));
+      });
+
+ m_router->put(R"(^/globalsettings$)", [this](beast_http_request r, http_context c) {
+      auto json = json::parse(r.body());
+
+      m_applyGlobalSettings({json["mono-input"]});
+
+      c.send(make_200<beast::http::string_body>(r, json.dump(), "application/json"));
+      });
 
   m_router->all(R"(^.*$)", [](beast_http_request r, http_context c) {
       c.send(make_404<beast::http::string_body>(r, "not found", "text/html"));

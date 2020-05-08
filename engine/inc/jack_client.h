@@ -20,7 +20,7 @@ class JackClient
     using Factory = std::function<Ptr(const std::string&, AudioProcessor::Factory)>;
 
     virtual ~JackClient() {}
-    virtual void connectInputsToCapturePorts(std::vector<std::string> portNames) const = 0;
+    virtual void connectInputsToCapturePorts(std::vector<std::string> portNames, bool mono) const = 0;
     virtual void connectOutputsToPlaybackPorts() const = 0;
     virtual std::vector<std::string> getInputPorts() const = 0;
     virtual std::vector<std::string> getOutputPorts() const = 0;
@@ -51,7 +51,7 @@ class JackClientImpl : public JackClient,
     ~JackClientImpl() override;
     JackClientImpl() = delete;
 
-    void connectInputsToCapturePorts(std::vector<std::string> portNames) const override;
+    void connectInputsToCapturePorts(std::vector<std::string> portNames, bool mono) const override;
     void connectOutputsToPlaybackPorts() const override;
     std::vector<std::string> getInputPorts() const override;
     std::vector<std::string> getOutputPorts() const override;

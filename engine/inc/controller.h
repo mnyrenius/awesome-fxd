@@ -4,6 +4,8 @@
 #include "fx_plugin_handler.h"
 #include "jack_client.h"
 #include <configuration_backend.h>
+#include <fx_chain_configuration.h>
+#include <global_settings.h>
 
 namespace awesomefx
 {
@@ -36,6 +38,7 @@ class ControllerImpl : public Controller
     ConfigurationBackend::Ptr m_configBackend;
     std::vector<JackClient::Ptr> m_fxChain;
     FxChainConfiguration m_currentConfig;
+    GlobalSettings m_globalSettings;
 };
 
 }

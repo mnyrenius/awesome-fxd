@@ -78,10 +78,9 @@ JackClientImpl::~JackClientImpl()
   ::jack_client_close(m_client);
 }
 
-void JackClientImpl::connectInputsToCapturePorts(std::vector<std::string> portNames) const
+void JackClientImpl::connectInputsToCapturePorts(std::vector<std::string> portNames, bool mono) const
 {
-
-  if (portNames.size() != 2)
+  if (portNames.empty())
   {
     auto ports = ::jack_get_ports (m_client, 0, 0, JackPortIsPhysical|JackPortIsOutput);
     if (ports == nullptr)
@@ -97,19 +96,22 @@ void JackClientImpl::connectInputsToCapturePorts(std::vector<std::string> portNa
     ::jack_free(ports);
   }
 
-  if (portNames.size() < 2)
+  if (portNames.size() < 1)
   {
-    throw std::runtime_error("There must be at least 2 capture ports");
+    throw std::runtime_error("There must be at least one capture port");
   }
+
+  auto left = portNames[0];
+  auto right = mono || portNames.size() < 2 ? portNames[0] : portNames[1];
 
   auto res1 = ::jack_connect(
       m_client,
-      portNames[0].c_str(),
+      left.c_str(),
       ::jack_port_name(m_processCtx.inputPorts.left));
 
   auto res2 = ::jack_connect(
       m_client,
-      portNames[1].c_str(),
+      right.c_str(),
       ::jack_port_name(m_processCtx.inputPorts.right));
 
   if (res1 || res2)
