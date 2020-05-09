@@ -91,10 +91,15 @@ namespace awesomefx
         {
           case Rate:
             m_step = 10.0 * param.value / m_fs;
+            break;
           case Depth:
             m_depth = param.value * 0.15;
+            break;
           case DryWet:
             m_drywet = param.value;
+            break;
+          default:
+            break;
         }
       }
 

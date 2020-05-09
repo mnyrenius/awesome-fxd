@@ -46,9 +46,13 @@ class StateVariableFilter : public AudioProcessor
       switch (param.index)
       {
         case Cutoff:
-          m_f1 = 2.0 * std::sin(3.141592 * 3000 * m_params[Cutoff] / m_fs);
+          m_f1 = 2.0 * std::sin(3.141592 * 2000 * m_params[Cutoff] / m_fs);
+          break;
         case Resonance:
           m_q1 = 1 - m_params[Resonance];
+          break;
+        default:
+          break;
       }
     }
 
