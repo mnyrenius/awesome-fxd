@@ -90,7 +90,7 @@ namespace awesomefx
         switch (param.index)
         {
           case Rate:
-            m_step = 10.0 * param.value / m_fs;
+            m_step = 5.0 * param.value / m_fs;
             break;
           case Depth:
             m_depth = param.value * 0.15;
