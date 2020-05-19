@@ -87,21 +87,22 @@ class FbComb
           Sample y_l = 0, y_r = 0;
           auto left = *in_l++;
           auto right = *in_r++;
+          auto in = (left + right) * 0.5;
 
           for (auto i = 0U; i < m_lFbcf.size(); ++i)
           {
-            y_l += 0.25 * m_lFbcf[i].filter(left, m_combDelays[i] * m_size);
-            y_r += 0.25 * m_rFbcf[i].filter(right, m_combDelays[i] * m_size);
+            y_l += 0.25 * m_lFbcf[i].filter(in, m_combDelays[i] * m_size);
+            y_r += 0.25 * m_rFbcf[i].filter(in, m_combDelays[i] * m_size + 31);
           }
 
           for (auto i = 0U; i < m_lAps.size(); ++i)
           {
             y_l = m_lAps[i].filter(y_l, m_apDelays[i] * m_size);
-            y_r = m_rAps[i].filter(y_r, m_apDelays[i] * m_size);
+            y_r = m_rAps[i].filter(y_r, m_apDelays[i] * m_size + 31);
           }
 
-          *out_l++ = y_l * m_dryWet + left * (1 - m_dryWet);
-          *out_r++ = y_r * m_dryWet + right * (1 - m_dryWet);
+          *out_l++ = y_l * m_dryWet + y_r * 0.2 + left * (1 - m_dryWet);
+          *out_r++ = y_r * m_dryWet + y_l * 0.2 + right * (1 - m_dryWet);
         }
       }
 
