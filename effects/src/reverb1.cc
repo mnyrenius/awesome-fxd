@@ -101,8 +101,8 @@ class FbComb
             y_r = m_rAps[i].filter(y_r, m_apDelays[i] * m_size + 31);
           }
 
-          *out_l++ = y_l * m_dryWet + y_r * 0.2 + left * (1 - m_dryWet);
-          *out_r++ = y_r * m_dryWet + y_l * 0.2 + right * (1 - m_dryWet);
+          *out_l++ = y_l * m_dryWet * 0.8 + y_r * m_dryWet * 0.2 + left * (1 - m_dryWet);
+          *out_r++ = y_r * m_dryWet * 0.8 + y_l * m_dryWet * 0.2 + right * (1 - m_dryWet);
         }
       }
 
